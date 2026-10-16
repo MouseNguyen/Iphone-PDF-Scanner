@@ -1,6 +1,5 @@
 Pod::Spec.new do |s|
-  s.name = 'PocketScanner'
-  s.module_name = 'PocketScannerNative'
+  s.name = 'PocketScannerNative'
   s.version = '0.1.0'
   s.summary = 'Local document scanning, recognition and PDF export'
   s.description = s.summary

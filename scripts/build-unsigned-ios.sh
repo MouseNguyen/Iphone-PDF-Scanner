@@ -23,7 +23,7 @@ npx --no-install expo install --check
 npx --no-install expo prebuild --platform ios --no-install
 (cd ios && pod install)
 python3 - <<'PY'
-import pathlib, subprocess, shutil, zipfile, plistlib
+import pathlib, subprocess, shutil, zipfile, plistlib, json
 from collections import deque
 root = pathlib.Path.cwd()
 workspaces = list((root / 'ios').glob('*.xcworkspace'))
@@ -32,6 +32,20 @@ if len(workspaces) != 1:
 workspace = workspaces[0]
 scheme = workspace.stem
 out = root / 'verification' / 'cloud-build'
+build_settings = json.loads(subprocess.check_output([
+    'xcodebuild', '-workspace', str(workspace), '-scheme', scheme,
+    '-configuration', 'Release', '-destination', 'generic/platform=iOS',
+    '-showBuildSettings', '-json',
+], text=True))
+application_targets = [item for item in build_settings
+                       if item.get('buildSettings', {}).get('PRODUCT_TYPE') == 'com.apple.product-type.application']
+if len(application_targets) != 1:
+    selected = [(item.get('target'), item.get('buildSettings', {}).get('PRODUCT_TYPE')) for item in build_settings]
+    raise SystemExit(f'Archive scheme must select exactly one application target; selected: {selected}')
+application_target = application_targets[0]
+if application_target['buildSettings'].get('SKIP_INSTALL') != 'NO':
+    raise SystemExit('Application target must have SKIP_INSTALL=NO to appear in the archive')
+print(f"Verified application archive target: {application_target['target']}", flush=True)
 archive = out / 'PocketScanner.xcarchive'
 log_path = out / 'xcodebuild.log'
 print('Compiling native app; compiler output is being saved to xcodebuild.log.', flush=True)

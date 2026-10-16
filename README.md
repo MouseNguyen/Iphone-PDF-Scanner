@@ -35,7 +35,7 @@ npm run bundle:check
 
 These are bounded local checks, not an iOS native build. `dist/` contains the exported iOS JavaScript/assets, not an installable `.ipa`. No development server is started by these commands. Project-local logs live in `verification/`.
 
-The local module is autolinked as `PocketScanner` using `modules/scanner/ios/PocketScanner.podspec`. Native XCTest source is declared as the pod's `Tests` test spec; it needs an authorized macOS test target/lane and is not executed by `npm test`.
+The native pod and Swift module are `PocketScannerNative`, using `modules/scanner/ios/PocketScannerNative.podspec`; the JavaScript binding remains `PocketScanner`. The distinct pod name avoids colliding with the application's `PocketScanner` build scheme. Native XCTest source is declared as the pod's `Tests` test spec; it needs an authorized macOS test target/lane and is not executed by `npm test`.
 
 ## Next physical-device step
 

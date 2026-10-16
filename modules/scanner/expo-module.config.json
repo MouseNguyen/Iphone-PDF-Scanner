@@ -1,1 +1,1 @@
-{ "platforms": ["apple"], "apple": { "modules": ["ScannerModule"], "swiftModuleName": "PocketScannerNative" } }
+{ "platforms": ["apple"], "apple": { "modules": ["ScannerModule"] } }
