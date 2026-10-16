@@ -1,6 +1,6 @@
 import XCTest
 import UIKit
-@testable import PocketScanner
+@testable import PocketScannerNative
 
 final class DocumentStoreTests: XCTestCase {
   func testUnreadableImportDoesNotHideSavedDocuments() throws {
