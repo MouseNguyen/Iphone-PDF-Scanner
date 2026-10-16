@@ -20,7 +20,7 @@ Use `src/app` for route files, feature folders for screens and shared logic, and
 
 ## Local development
 
-Existing Node 24.19.0 is compatible. Expo is pinned to 58.0.12 and dependencies are locked; npm cache is `.npm-cache/`. No global install is needed.
+Existing Node 24.19.0 is compatible. Expo is pinned to 58.0.13 and dependencies are locked; npm cache is `.npm-cache/`. No global install is needed.
 
 ```powershell
 Set-Location 'F:\Codex\Projects\rea\Projects\PDF Scanner\ios-app'
