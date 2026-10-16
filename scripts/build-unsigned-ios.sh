@@ -24,6 +24,7 @@ npx --no-install expo prebuild --platform ios --no-install
 (cd ios && pod install)
 python3 - <<'PY'
 import pathlib, subprocess, shutil, zipfile, plistlib
+from collections import deque
 root = pathlib.Path.cwd()
 workspaces = list((root / 'ios').glob('*.xcworkspace'))
 if len(workspaces) != 1:
@@ -32,12 +33,22 @@ workspace = workspaces[0]
 scheme = workspace.stem
 out = root / 'verification' / 'cloud-build'
 archive = out / 'PocketScanner.xcarchive'
-subprocess.run([
-    'xcodebuild', '-workspace', str(workspace), '-scheme', scheme,
-    '-configuration', 'Release', '-destination', 'generic/platform=iOS',
-    '-archivePath', str(archive), 'archive',
-    'CODE_SIGNING_ALLOWED=NO', 'CODE_SIGNING_REQUIRED=NO', 'CODE_SIGN_IDENTITY=',
-], check=True)
+log_path = out / 'xcodebuild.log'
+print('Compiling native app; compiler output is being saved to xcodebuild.log.', flush=True)
+with log_path.open('w') as log:
+    result = subprocess.run([
+        'xcodebuild', '-quiet', '-hideShellScriptEnvironment',
+        '-workspace', str(workspace), '-scheme', scheme,
+        '-configuration', 'Release', '-destination', 'generic/platform=iOS',
+        '-archivePath', str(archive), 'archive',
+        'CODE_SIGNING_ALLOWED=NO', 'CODE_SIGNING_REQUIRED=NO', 'CODE_SIGN_IDENTITY=',
+    ], stdout=log, stderr=subprocess.STDOUT)
+(out / 'xcodebuild-exit-code.txt').write_text(f'{result.returncode}\n')
+with log_path.open(errors='replace') as log:
+    print(''.join(deque(log, maxlen=120)), flush=True)
+print(f'Xcode exit status: {result.returncode}', flush=True)
+if result.returncode:
+    raise SystemExit(result.returncode)
 apps = list((archive / 'Products' / 'Applications').glob('*.app'))
 if len(apps) != 1:
     raise SystemExit('Expected exactly one archived iPhone app')
