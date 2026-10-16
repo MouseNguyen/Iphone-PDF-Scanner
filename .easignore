@@ -1,0 +1,9 @@
+node_modules/
+.npm-cache/
+.graft/
+.expo/
+dist/
+verification/
+*.ipa
+*.p12
+*.mobileprovision
